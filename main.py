@@ -4,14 +4,15 @@ import dateutil.parser
 from pandas import DataFrame
 from dateutil.relativedelta import relativedelta
 
+userfile='./Night_Ride.gpx'
 
 # Read in GPX file
-gpx = gpxpy.parse(open('./Night_Ride.gpx'))
+gpx = gpxpy.parse(open(userfile))
 track = gpx.tracks[0]
 segment = track.segments[0]
 
 # Read in gpx from file as TEXT
-with open('Night_Ride.gpx', 'r', encoding='utf8') as f:
+with open(userfile, 'r', encoding='utf8') as f:
     text = f.read()
 f.closed
 
@@ -38,20 +39,20 @@ print(relativedelta(datetimestart, datetimedesired))
 #Find difference between start datetime and desired start datetime
 timediff = datetimedesired - datetimestart
 timediffsecs = timediff.seconds
-print(timediffsecs)
+
 # Loop through and change time based on user preference
 for track_point in segment.points:
     #track_point.adjust_time(datetime.timedelta(seconds=timediffsecs))
     track_point.adjust_time(relativedelta(datetimedesired, datetimestart))
 
-data = []
-segment_length = segment.length_3d()
-for point_idx, point in enumerate(segment.points):
-    data.append([point.longitude, point.latitude,
-                 point.elevation, point.time, segment.get_speed(point_idx)])
+#data = []
+#segment_length = segment.length_3d()
+#for point_idx, point in enumerate(segment.points):
+ #   data.append([point.longitude, point.latitude,
+  #               point.elevation, point.time, segment.get_speed(point_idx)])
 
-columns = ['Longitude', 'Latitude', 'Altitude', 'Time', 'Speed']
-df = DataFrame(data, columns=columns)
-print(df)
+#columns = ['Longitude', 'Latitude', 'Altitude', 'Time', 'Speed']
+#df = DataFrame(data, columns=columns)
+#print(df)
 
 print(gpx.to_xml(), file=open("output.gpx", "a"))

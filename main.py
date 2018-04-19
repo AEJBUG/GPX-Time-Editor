@@ -2,6 +2,7 @@ import gpxpy
 import datetime
 import dateutil.parser
 from pandas import DataFrame
+from dateutil.relativedelta import relativedelta
 
 
 # Read in GPX file
@@ -15,7 +16,7 @@ with open('Night_Ride.gpx', 'r', encoding='utf8') as f:
 f.closed
 
 # Get user desired datetime
-dateinput = '2016-03-05T23:00:00'
+dateinput = '2016-03-04T23:00:00'
 datetimedesired = dateutil.parser.parse(dateinput)
 
 # Find first time stamp in file
@@ -32,13 +33,16 @@ endindex = endindex - 1
 startdate = text[startindex:endindex]
 datetimestart = dateutil.parser.parse(startdate)
 
+print(relativedelta(datetimestart, datetimedesired))
+
 #Find difference between start datetime and desired start datetime
 timediff = datetimedesired - datetimestart
 timediffsecs = timediff.seconds
-
+print(timediffsecs)
 # Loop through and change time based on user preference
 for track_point in segment.points:
-    track_point.adjust_time(datetime.timedelta(seconds=timediffsecs))
+    #track_point.adjust_time(datetime.timedelta(seconds=timediffsecs))
+    track_point.adjust_time(relativedelta(datetimedesired, datetimestart))
 
 data = []
 segment_length = segment.length_3d()
@@ -50,4 +54,4 @@ columns = ['Longitude', 'Latitude', 'Altitude', 'Time', 'Speed']
 df = DataFrame(data, columns=columns)
 print(df)
 
-
+print(gpx.to_xml(), file=open("output.gpx", "a"))
